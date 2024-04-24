@@ -5,16 +5,16 @@ CSPB 1300 Image Processing Application
 PLEASE FILL OUT THIS SECTION PRIOR TO SUBMISSION
 
 - Your name:
-    <ANSWER>
+    <Eric McAee>
 
 - All project requirements fully met? (YES or NO):
-    <ANSWER>
+    <Yes>
 
 - If no, please explain what you could not get to work:
-    <ANSWER>
+    <N/a>
 
 - Did you do any optional enhancements? If so, please explain:
-    <ANSWER>
+    <No>
 */
 
 #include <iostream>
@@ -233,19 +233,126 @@ bool write_image(string filename, const vector<vector<Pixel>>& image)
 //                                DO NOT MODIFY THE SECTION ABOVE                                    //
 //***************************************************************************************************//
 
-
-//
 // YOUR FUNCTION DEFINITIONS HERE
-//
 
+//Process 1
+//Adds vignette effect to image (dark corners)
+    vector<vector<Pixel>> process_1(const vector<vector<Pixel>>& image)
+   {
+        double num_rows = image.size();
+        double num_columns = image[0].size();
+        vector<vector<Pixel>> new_image(num_rows, vector<Pixel> (num_columns));
+       
+        for (int row = 0; row < num_rows; row++)
+        {
+            for (int column = 0; column < num_columns; column++)
+            {
+                
+                double red = image[row][column].red;
+                double green = image[row][column].green;
+                double blue = image[row][column].blue;
+
+                double distance = sqrt(pow(column - (num_columns / 2.0), 2) + pow(row - (num_rows/2.0), 2));
+                double scaling_factor = (num_rows - distance)/num_rows;
+
+                double new_red = red * scaling_factor;
+                double new_green = green * scaling_factor;
+                double new_blue = blue * scaling_factor;
+
+                new_image[row][column].red = new_red;
+                new_image[row][column].green = new_green; 
+                new_image[row][column].blue = new_blue;
+            }
+        }
+        return new_image;
+   }
+
+//Process 2
+//Adds Clarendon effect to image (darks darker and lights lighter) by a scaling factor)
+vector<vector<Pixel>> process_2(const vector<vector<Pixel>>& image, double scaling_factor)
+{
+
+}
+
+//Process 3
+//Grayscale image
+vector<vector<Pixel>> process_3(const vector<vector<Pixel>>& image)
+{
+
+}
+
+//Process 4
+//Grayscale image
+vector<vector<Pixel>> process_4(const vector<vector<Pixel>>& image)
+{
+
+}
+
+//Process 5
+//Rotates image by a specified number of multiples of 90 degrees clockwise
+vector<vector<Pixel>> process_5(const vector<vector<Pixel>>& image, int number)
+{
+
+}
 
 int main()
+//prompt user to select a filter by int number
+//validate selection is in range or continue to display options
+//quit on char entry
 {
+    cout << "Hello and welcome to the CSPB1300 image manipulator!" << endl;
+    int input;
+    do
+    {
+        cout << "Please select a filter from below or enter any character to quit." << endl;
+        cout << "1: Adds Vignette \n2: Adds Clarendon \n3: Grayscale \n4: Rotates 90 Degrees \n5: Rotates 90 Degrees, x number of times\n";
+        cin >> input;
+        if (cin.fail())
+        {
+            cout << "Thank you for using the CSPB1300 image manipulator";
+            return 0;
+        }
+    }
+    while (input < 1 || input > 10 );
+//reads in BMP as a vector of vectors of Pixels
+    vector<vector<Pixel>> image_vector = read_image("sample_images/sample.bmp");
+//creates a new image vector to store output of image processing functions
+    vector<vector<Pixel>> new_image_vector;
+//creating an empty string to alter for output file later
+    string filename = "";
+//switch statement compares user input to select and execute desired image processing function
+    switch(input)
+    {
+        case 1:
+            filename  = "image_vignette.bmp";
+            new_image_vector = process_1(image_vector);
+            break;
+        
+        case 2:
+            double tochange;
+            new_image_vector = process_2(image_vector, tochange);
+            break;
+        case 3:
+            new_image_vector = process_3(image_vector);
+            break;
+        case 4:
+            new_image_vector = process_4(image_vector);
+            break;
+        case 5:
+            double alsotochange;
+            new_image_vector = process_5(image_vector, alsotochange);
+            break;
+    }
     
-    //
-    // YOUR CODE HERE
-    //
-	cout << "\n\n\nThis line should be your own code!\n\n\n";
-
+    bool success = write_image(filename, new_image_vector);
+    if (success)
+    {
+        cout << "Please find your altered image named: "; cout << filename; cout << " in your current directory"; cout << endl;
+    }
+    else
+    {
+        cout << "Something went wrong";
+    }
     return 0;
+
 }
