@@ -21,6 +21,8 @@ PLEASE FILL OUT THIS SECTION PRIOR TO SUBMISSION
 #include <vector>
 #include <fstream>
 #include <cmath>
+#include<cstring>
+
 using namespace std;
 
 //***************************************************************************************************//
@@ -237,55 +239,131 @@ bool write_image(string filename, const vector<vector<Pixel>>& image)
 
 //Process 1
 //Adds vignette effect to image (dark corners)
-    vector<vector<Pixel>> process_1(const vector<vector<Pixel>>& image)
-   {
-        double num_rows = image.size();
-        double num_columns = image[0].size();
-        vector<vector<Pixel>> new_image(num_rows, vector<Pixel> (num_columns));
-       
-        for (int row = 0; row < num_rows; row++)
+vector<vector<Pixel>> process_1(const vector<vector<Pixel>>& image)
+{
+    double num_rows = image.size();
+    double num_columns = image[0].size();
+    vector<vector<Pixel>> new_image(num_rows, vector<Pixel> (num_columns));
+    
+    for (int row = 0; row < num_rows; row++)
+    {
+        for (int column = 0; column < num_columns; column++)
         {
-            for (int column = 0; column < num_columns; column++)
-            {
-                
-                double red = image[row][column].red;
-                double green = image[row][column].green;
-                double blue = image[row][column].blue;
+            
+            double red = image[row][column].red;
+            double green = image[row][column].green;
+            double blue = image[row][column].blue;
 
-                double distance = sqrt(pow(column - (num_columns / 2.0), 2) + pow(row - (num_rows/2.0), 2));
-                double scaling_factor = (num_rows - distance)/num_rows;
+            double distance = sqrt(pow(column - (num_columns / 2.0), 2) + pow(row - (num_rows/2.0), 2));
+            double scaling_factor = (num_rows - distance)/num_rows;
 
-                double new_red = red * scaling_factor;
-                double new_green = green * scaling_factor;
-                double new_blue = blue * scaling_factor;
+            double new_red = red * scaling_factor;
+            double new_green = green * scaling_factor;
+            double new_blue = blue * scaling_factor;
 
-                new_image[row][column].red = new_red;
-                new_image[row][column].green = new_green; 
-                new_image[row][column].blue = new_blue;
-            }
+            new_image[row][column].red = new_red;
+            new_image[row][column].green = new_green; 
+            new_image[row][column].blue = new_blue;
         }
-        return new_image;
-   }
+    }
+    return new_image;
+}
 
 //Process 2
 //Adds Clarendon effect to image (darks darker and lights lighter) by a scaling factor)
 vector<vector<Pixel>> process_2(const vector<vector<Pixel>>& image, double scaling_factor)
 {
+    int num_rows = image.size();
+    int num_columns = image[0].size();
+    double average_value;
+    vector<vector<Pixel>> new_image(num_rows, vector<Pixel> (num_columns));
+    
+    for (int row = 0; row < num_rows; row++)
+    {
+        for (int column = 0; column < num_columns; column++)
+        {
+            
+            double red = image[row][column].red;
+            double green = image[row][column].green;
+            double blue = image[row][column].blue;
 
+            double new_red;
+            double new_green;
+            double new_blue;
+
+            average_value = (red + green + blue)/3.0;
+
+            if (average_value >= 170)
+            {
+                new_red = (255 - (255 - red)*scaling_factor);
+                new_green = (255 - (255 - green)*scaling_factor);
+                new_blue =  (255 - (255 - blue)*scaling_factor);
+            }
+            
+            else if (average_value < 90)
+            {
+                new_red = red*scaling_factor;
+                new_green = green*scaling_factor;
+                new_blue =  blue*scaling_factor;
+            }
+            
+            else
+            {
+                new_red = red;
+                new_green = green;
+                new_blue =  blue;
+            }
+
+            new_image[row][column].red = new_red;
+            new_image[row][column].green = new_green; 
+            new_image[row][column].blue = new_blue;
+        }
+    }
+    return new_image;
 }
 
 //Process 3
 //Grayscale image
 vector<vector<Pixel>> process_3(const vector<vector<Pixel>>& image)
 {
+    int num_rows = image.size();
+    int num_columns = image[0].size();
+    double gray_value;
+    vector<vector<Pixel>> new_image(num_rows, vector<Pixel> (num_columns));
+    for (int row = 0; row < num_rows; row++)
+    {
+        for (int column = 0; column < num_columns; column++)
+        {
+            
+            double red = image[row][column].red;
+            double green = image[row][column].green;
+            double blue = image[row][column].blue;
 
+            gray_value = (red + green + blue)/3.0;
+
+            new_image[row][column].red = gray_value;
+            new_image[row][column].green = gray_value; 
+            new_image[row][column].blue = gray_value;
+        }
+    }
+    return new_image;
 }
 
 //Process 4
 //Grayscale image
 vector<vector<Pixel>> process_4(const vector<vector<Pixel>>& image)
 {
-
+    int num_rows = image.size();
+    int num_columns = image[0].size();
+    vector<vector<Pixel>> new_image(num_columns, vector<Pixel> (num_rows));
+     for (int row = 0; row < num_rows; row++)
+    {
+        for (int column = 0; column < num_columns; column++)
+        {
+            new_image[column][num_columns - row] = image[row][column];
+        }
+    }
+    return new_image;
 }
 
 //Process 5
@@ -296,46 +374,71 @@ vector<vector<Pixel>> process_5(const vector<vector<Pixel>>& image, int number)
 }
 
 int main()
-//prompt user to select a filter by int number
-//validate selection is in range or continue to display options
-//quit on char entry
 {
+    //initial greeting
+    //declare variables for file entry and filter selection from user
     cout << "Hello and welcome to the CSPB1300 image manipulator!" << endl;
-    int input;
+    string input_filename = "";
+    int selected_filter;
+    int filename_length;
+    //validate user input for filename
+    do
+    {
+        cout << "Please select a BMP file to process. Remember to include the full pathway if not local, and the extension BMP."; cout << endl;
+        cin >> input_filename;
+        filename_length = input_filename.length();
+    } 
+    while (cin.fail());
+    //validate user input for filter selection
     do
     {
         cout << "Please select a filter from below or enter any character to quit." << endl;
         cout << "1: Adds Vignette \n2: Adds Clarendon \n3: Grayscale \n4: Rotates 90 Degrees \n5: Rotates 90 Degrees, x number of times\n";
-        cin >> input;
+        cin >> selected_filter;
         if (cin.fail())
         {
             cout << "Thank you for using the CSPB1300 image manipulator";
             return 0;
         }
     }
-    while (input < 1 || input > 10 );
+    while (selected_filter < 1 || selected_filter > 10 );
 //reads in BMP as a vector of vectors of Pixels
-    vector<vector<Pixel>> image_vector = read_image("sample_images/sample.bmp");
+    vector<vector<Pixel>> image_vector = read_image(input_filename);
 //creates a new image vector to store output of image processing functions
     vector<vector<Pixel>> new_image_vector;
 //creating an empty string to alter for output file later
-    string filename = "";
+    string output_filename = "";
 //switch statement compares user input to select and execute desired image processing function
-    switch(input)
+    switch(selected_filter)
     {
         case 1:
-            filename  = "image_vignette.bmp";
+            output_filename  = input_filename.substr(0, filename_length - 4) + ".vignette.bmp";    
             new_image_vector = process_1(image_vector);
             break;
         
         case 2:
-            double tochange;
-            new_image_vector = process_2(image_vector, tochange);
+            double scaling_factor;
+            do
+            {
+                cout << "Please enter a scaling factor between 0 and 1."; cout << endl;
+                cin >> scaling_factor;
+                if (cin.fail())
+                {
+                    cout << "Numeric value not entered. Program quitting.";
+                    return 1;
+                }
+            } 
+            while (scaling_factor < 0 || scaling_factor > 1);
+
+            output_filename  = input_filename.substr(0, filename_length - 4) + ".clarendon.bmp"; 
+            new_image_vector = process_2(image_vector, scaling_factor);
             break;
         case 3:
+            output_filename  = input_filename.substr(0, filename_length - 4) + ".grayscale.bmp"; 
             new_image_vector = process_3(image_vector);
             break;
         case 4:
+            output_filename  = input_filename.substr(0, filename_length - 4) + ".rotated90.bmp"; 
             new_image_vector = process_4(image_vector);
             break;
         case 5:
@@ -344,10 +447,10 @@ int main()
             break;
     }
     
-    bool success = write_image(filename, new_image_vector);
+    bool success = write_image(output_filename, new_image_vector);
     if (success)
     {
-        cout << "Please find your altered image named: "; cout << filename; cout << " in your current directory"; cout << endl;
+        cout << "Please find your altered image named: "; cout << output_filename; cout << " in your current directory"; cout << endl;
     }
     else
     {
