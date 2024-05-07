@@ -21,7 +21,7 @@ PLEASE FILL OUT THIS SECTION PRIOR TO SUBMISSION
 #include <vector>
 #include <fstream>
 #include <cmath>
-#include<cstring>
+#include <cstring>
 
 using namespace std;
 
@@ -45,14 +45,14 @@ struct Pixel
  * @param offset the offset at which to read the integer
  * @param bytes  the number of bytes to read
  * @return the integer starting at the given offset
- */ 
-int get_int(fstream& stream, int offset, int bytes)
+ */
+int get_int(fstream &stream, int offset, int bytes)
 {
     stream.seekg(offset);
     int result = 0;
     int base = 1;
     for (int i = 0; i < bytes; i++)
-    {   
+    {
         result = result + stream.get() * base;
         base = base * 256;
     }
@@ -92,7 +92,7 @@ vector<vector<Pixel>> read_image(string filename)
     }
 
     // Create a vector the size of the input image
-    vector<vector<Pixel>> image(height, vector<Pixel> (width));
+    vector<vector<Pixel>> image(height, vector<Pixel>(width));
 
     int pos = start;
     // For each row, starting from the last row to the first
@@ -141,7 +141,7 @@ void set_bytes(unsigned char arr[], int offset, int bytes, int value)
 {
     for (int i = 0; i < bytes; i++)
     {
-        arr[offset+i] = (unsigned char)(value>>(i*8));
+        arr[offset + i] = (unsigned char)(value >> (i * 8));
     }
 }
 
@@ -151,7 +151,7 @@ void set_bytes(unsigned char arr[], int offset, int bytes, int value)
  * @param image    The input image to save
  * @return True if successful and false otherwise
  */
-bool write_image(string filename, const vector<vector<Pixel>>& image)
+bool write_image(string filename, const vector<vector<Pixel>> &image)
 {
     // Get the image width and height in pixels
     int width_pixels = image[0].size();
@@ -183,29 +183,29 @@ bool write_image(string filename, const vector<vector<Pixel>>& image)
     unsigned char dib_header[DIB_HEADER_SIZE] = {0};
 
     // BMP Header
-    set_bytes(bmp_header,  0, 1, 'B');              // ID field
-    set_bytes(bmp_header,  1, 1, 'M');              // ID field
-    set_bytes(bmp_header,  2, 4, BMP_HEADER_SIZE+DIB_HEADER_SIZE+array_bytes); // Size of BMP file
-    set_bytes(bmp_header,  6, 2, 0);                // Reserved
-    set_bytes(bmp_header,  8, 2, 0);                // Reserved
-    set_bytes(bmp_header, 10, 4, BMP_HEADER_SIZE+DIB_HEADER_SIZE); // Pixel array offset
+    set_bytes(bmp_header, 0, 1, 'B');                                             // ID field
+    set_bytes(bmp_header, 1, 1, 'M');                                             // ID field
+    set_bytes(bmp_header, 2, 4, BMP_HEADER_SIZE + DIB_HEADER_SIZE + array_bytes); // Size of BMP file
+    set_bytes(bmp_header, 6, 2, 0);                                               // Reserved
+    set_bytes(bmp_header, 8, 2, 0);                                               // Reserved
+    set_bytes(bmp_header, 10, 4, BMP_HEADER_SIZE + DIB_HEADER_SIZE);              // Pixel array offset
 
     // DIB Header
-    set_bytes(dib_header,  0, 4, DIB_HEADER_SIZE);  // DIB header size
-    set_bytes(dib_header,  4, 4, width_pixels);     // Width of bitmap in pixels
-    set_bytes(dib_header,  8, 4, height_pixels);    // Height of bitmap in pixels
-    set_bytes(dib_header, 12, 2, 1);                // Number of color planes
-    set_bytes(dib_header, 14, 2, 24);               // Number of bits per pixel
-    set_bytes(dib_header, 16, 4, 0);                // Compression method (0=BI_RGB)
-    set_bytes(dib_header, 20, 4, array_bytes);      // Size of raw bitmap data (including padding)                     
-    set_bytes(dib_header, 24, 4, 2835);             // Print resolution of image (2835 pixels/meter)
-    set_bytes(dib_header, 28, 4, 2835);             // Print resolution of image (2835 pixels/meter)
-    set_bytes(dib_header, 32, 4, 0);                // Number of colors in palette
-    set_bytes(dib_header, 36, 4, 0);                // Number of important colors
+    set_bytes(dib_header, 0, 4, DIB_HEADER_SIZE); // DIB header size
+    set_bytes(dib_header, 4, 4, width_pixels);    // Width of bitmap in pixels
+    set_bytes(dib_header, 8, 4, height_pixels);   // Height of bitmap in pixels
+    set_bytes(dib_header, 12, 2, 1);              // Number of color planes
+    set_bytes(dib_header, 14, 2, 24);             // Number of bits per pixel
+    set_bytes(dib_header, 16, 4, 0);              // Compression method (0=BI_RGB)
+    set_bytes(dib_header, 20, 4, array_bytes);    // Size of raw bitmap data (including padding)
+    set_bytes(dib_header, 24, 4, 2835);           // Print resolution of image (2835 pixels/meter)
+    set_bytes(dib_header, 28, 4, 2835);           // Print resolution of image (2835 pixels/meter)
+    set_bytes(dib_header, 32, 4, 0);              // Number of colors in palette
+    set_bytes(dib_header, 36, 4, 0);              // Number of important colors
 
     // Write the BMP and DIB Headers to the file
-    stream.write((char*)bmp_header, sizeof(bmp_header));
-    stream.write((char*)dib_header, sizeof(dib_header));
+    stream.write((char *)bmp_header, sizeof(bmp_header));
+    stream.write((char *)dib_header, sizeof(dib_header));
 
     // Initialize pixel and padding
     unsigned char pixel[3] = {0};
@@ -220,7 +220,7 @@ bool write_image(string filename, const vector<vector<Pixel>>& image)
             pixel[0] = image[h][w].blue;
             pixel[1] = image[h][w].green;
             pixel[2] = image[h][w].red;
-            stream.write((char*)pixel, 3);
+            stream.write((char *)pixel, 3);
         }
         // Write the padding bytes
         stream.write((char *)padding, padding_bytes);
@@ -234,15 +234,17 @@ bool write_image(string filename, const vector<vector<Pixel>>& image)
 //***************************************************************************************************//
 //                                DO NOT MODIFY THE SECTION ABOVE                                    //
 //***************************************************************************************************//
-//helper function to prompt user to enter an output filename
+// helper function to prompt user to enter an output filename
 string get_output_filename()
 {
     string filename;
-    cout << "Please select an output filename for your altered image. Please do not use the input filename as it will be overwritten."; cout << endl;
+    cout << "Please select an output filename for your altered image. Please do not use the input filename as it will be overwritten.";
+    cout << endl;
     cin >> filename;
     return filename;
 }
-//helper function to print menu of filter options and prompt user for a selection
+// helper function to print menu of filter options and prompt user for a selection
+// @return the user selection used to determine image processor
 int get_selection()
 {
     string selection;
@@ -250,34 +252,39 @@ int get_selection()
     cout << "Please select a filter/option from the list below.\n";
     cout << "0: Change file selection\n1: Adds Vignette \n2: Adds Clarendon \n3: Grayscale \n4: Rotates 90 Degrees \n5: Rotates (Multiples of 90 Degrees)\n6: Enlarges image in x and y direction (integer values only)\n7: Converts image to high contrast (black and white only)\n8: Lightens image by a scaling factor (integer values only)\n9: Darkens image by a scaling factor (integer values only)\n10: Converts image to only black, white, red, blue, and green\n";
     cout << "(Enter Q to quit.)\n";
-    cin >> selection; 
-    if ( selection == "Q" || selection == "q")
+    cin >> selection;
+    if (selection == "Q" || selection == "q")
     {
         cout << "Thank you for using the CSPB1330 image manipulator. Have a great day!\n";
         selection_to_int = -1;
         return selection_to_int;
     }
-    try{ selection_to_int = stoi(selection); }
-    catch(invalid_argument user_input)
+    try
     {
-        cout << selection; cout << " is not a valid selection. Please try again\n";
+        selection_to_int = stoi(selection);
+    }
+    catch (invalid_argument user_input)
+    {
+        cout << selection;
+        cout << " is not a valid selection. Please try again\n";
         selection_to_int = -2;
     }
     return selection_to_int;
 }
 
-//helper function to prompt user to enter an input filename
+// helper function to prompt user to enter an input filename
 string get_input_filename()
 {
     string filename;
-    cout << "Please select a BMP file to process. Remember to include the full pathway if not local, and the extension .bmp."; cout << endl;
+    cout << "Please select a BMP file to process. Remember to include the full pathway if not local, and the extension BMP.";
+    cout << endl;
     cin >> filename;
     return filename;
 }
 
-//helper function to determine max between 3 ints
+// helper function to determine max between 3 ints
 int max_int(int a, int b, int c)
-{   
+{
     if (a >= b && a >= c)
     {
         return a;
@@ -291,52 +298,52 @@ int max_int(int a, int b, int c)
         return c;
     }
 }
-//Process 1
-//Adds vignette effect to image (dark corners)
-vector<vector<Pixel>> process_1(const vector<vector<Pixel>>& image)
+// Process 1
+// Adds vignette effect to image (dark corners)
+vector<vector<Pixel>> process_1(const vector<vector<Pixel>> &image)
 {
     double num_rows = image.size();
     double num_columns = image[0].size();
-    vector<vector<Pixel>> new_image(num_rows, vector<Pixel> (num_columns));
-    
+    vector<vector<Pixel>> new_image(num_rows, vector<Pixel>(num_columns));
+
     for (int row = 0; row < num_rows; row++)
     {
         for (int column = 0; column < num_columns; column++)
         {
-            
+
             double red = image[row][column].red;
             double green = image[row][column].green;
             double blue = image[row][column].blue;
 
-            double distance = sqrt(pow(column - (num_columns / 2.0), 2) + pow(row - (num_rows/2.0), 2));
-            double scaling_factor = (num_rows - distance)/num_rows;
+            double distance = sqrt(pow(column - (num_columns / 2.0), 2) + pow(row - (num_rows / 2.0), 2));
+            double scaling_factor = (num_rows - distance) / num_rows;
 
             double new_red = red * scaling_factor;
             double new_green = green * scaling_factor;
             double new_blue = blue * scaling_factor;
 
             new_image[row][column].red = new_red;
-            new_image[row][column].green = new_green; 
+            new_image[row][column].green = new_green;
             new_image[row][column].blue = new_blue;
         }
     }
     return new_image;
 }
 
-//Process 2
-//Adds Clarendon effect to image (darks darker and lights lighter) by a scaling factor)
-vector<vector<Pixel>> process_2(const vector<vector<Pixel>>& image, double scaling_factor)
+// Process 2
+// Adds Clarendon effect to image (darks darker and lights lighter) by a scaling factor)
+vector<vector<Pixel>> process_2(const vector<vector<Pixel>> &image, double scaling_factor)
 {
     int num_rows = image.size();
     int num_columns = image[0].size();
     double average_value;
-    vector<vector<Pixel>> new_image(num_rows, vector<Pixel> (num_columns));
-    
+    vector<vector<Pixel>> new_image(num_rows, vector<Pixel>(num_columns));
+
     for (int row = 0; row < num_rows; row++)
     {
         for (int column = 0; column < num_columns; column++)
         {
-            
+
             double red = image[row][column].red;
             double green = image[row][column].green;
             double blue = image[row][column].blue;
@@ -345,72 +352,72 @@ vector<vector<Pixel>> process_2(const vector<vector<Pixel>>& image, double scali
             double new_green;
             double new_blue;
 
-            average_value = (red + green + blue)/3.0;
+            average_value = (red + green + blue) / 3.0;
 
             if (average_value >= 170)
             {
-                new_red = (255 - (255 - red)*scaling_factor);
-                new_green = (255 - (255 - green)*scaling_factor);
-                new_blue =  (255 - (255 - blue)*scaling_factor);
+                new_red = (255 - (255 - red) * scaling_factor);
+                new_green = (255 - (255 - green) * scaling_factor);
+                new_blue = (255 - (255 - blue) * scaling_factor);
             }
-            
+
             else if (average_value < 90)
             {
                 new_red = red * scaling_factor;
                 new_green = green * scaling_factor;
-                new_blue =  blue * scaling_factor;
+                new_blue = blue * scaling_factor;
             }
-            
+
             else
             {
                 new_red = red;
                 new_green = green;
-                new_blue =  blue;
+                new_blue = blue;
             }
 
             new_image[row][column].red = new_red;
-            new_image[row][column].green = new_green; 
+            new_image[row][column].green = new_green;
             new_image[row][column].blue = new_blue;
         }
     }
     return new_image;
 }
 
-//Process 3
-//Grayscale image
-vector<vector<Pixel>> process_3(const vector<vector<Pixel>>& image)
+// Process 3
+// Grayscale image
+vector<vector<Pixel>> process_3(const vector<vector<Pixel>> &image)
 {
     int num_rows = image.size();
     int num_columns = image[0].size();
     double gray_value;
-    vector<vector<Pixel>> new_image(num_rows, vector<Pixel> (num_columns));
+    vector<vector<Pixel>> new_image(num_rows, vector<Pixel>(num_columns));
     for (int row = 0; row < num_rows; row++)
     {
         for (int column = 0; column < num_columns; column++)
         {
-            
+
             double red = image[row][column].red;
             double green = image[row][column].green;
             double blue = image[row][column].blue;
 
-            gray_value = (red + green + blue)/3.0;
+            gray_value = (red + green + blue) / 3.0;
 
             new_image[row][column].red = gray_value;
-            new_image[row][column].green = gray_value; 
+            new_image[row][column].green = gray_value;
             new_image[row][column].blue = gray_value;
         }
     }
     return new_image;
 }
 
-//Process 4
-//Rotates image by 90 degrees clockwise (not counter-clockwise)
-vector<vector<Pixel>> process_4(const vector<vector<Pixel>>& image)
+// Process 4
+// Rotates image by 90 degrees clockwise (not counter-clockwise)
+vector<vector<Pixel>> process_4(const vector<vector<Pixel>> &image)
 {
     int num_rows = image.size();
     int num_columns = image[0].size();
-    vector<vector<Pixel>> new_image(num_columns, vector<Pixel> (num_rows));
-     for (int row = 0; row < num_rows; row++)
+    vector<vector<Pixel>> new_image(num_columns, vector<Pixel>(num_rows));
+    for (int row = 0; row < num_rows; row++)
     {
         for (int column = 0; column < num_columns; column++)
         {
@@ -426,9 +433,9 @@ vector<vector<Pixel>> process_4(const vector<vector<Pixel>>& image)
     return new_image;
 }
 
-//Process 5
-//Rotates image by a specified number of multiples of 90 degrees clockwise
-vector<vector<Pixel>> process_5(const vector<vector<Pixel>>& image, int number)
+// Process 5
+// Rotates image by a specified number of multiples of 90 degrees clockwise
+vector<vector<Pixel>> process_5(const vector<vector<Pixel>> &image, int number)
 {
     vector<vector<Pixel>> new_image;
     new_image = image;
@@ -438,7 +445,7 @@ vector<vector<Pixel>> process_5(const vector<vector<Pixel>>& image, int number)
     }
     else if (number % 360 == 90)
     {
-        new_image =  process_4(image);
+        new_image = process_4(image);
     }
     else if (number % 360 == 180)
     {
@@ -451,37 +458,37 @@ vector<vector<Pixel>> process_5(const vector<vector<Pixel>>& image, int number)
     return new_image;
 }
 
-//Process 6
-//Enlarges image width and height by user entered factor
-vector<vector<Pixel>> process_6(const vector<vector<Pixel>>& image, int x_scale, int y_scale)
+// Process 6
+// Enlarges image width and height by user entered factor
+vector<vector<Pixel>> process_6(const vector<vector<Pixel>> &image, int x_scale, int y_scale)
 {
     int num_rows = image.size();
     int num_columns = image[0].size();
     int new_width = num_columns * x_scale;
     int new_height = num_rows * y_scale;
-    vector<vector<Pixel>> new_image(new_height, vector<Pixel> (new_width));
+    vector<vector<Pixel>> new_image(new_height, vector<Pixel>(new_width));
 
-    for ( int i = 0; i < new_height; i++ )
+    for (int i = 0; i < new_height; i++)
     {
-        for (int j = 0; j < new_width; j++ )
+        for (int j = 0; j < new_width; j++)
         {
-            new_image[i][j].red = image[int(i/y_scale)][int(j/x_scale)].red;
-            new_image[i][j].green = image[int(i/y_scale)][int(j/x_scale)].green;
-            new_image[i][j].blue = image[int(i/y_scale)][int(j/x_scale)].blue;
+            new_image[i][j].red = image[int(i / y_scale)][int(j / x_scale)].red;
+            new_image[i][j].green = image[int(i / y_scale)][int(j / x_scale)].green;
+            new_image[i][j].blue = image[int(i / y_scale)][int(j / x_scale)].blue;
         }
     }
     return new_image;
 }
 
-//Process 7
-//Convert image to high contrast (black and white only)
-vector<vector<Pixel>> process_7(const vector<vector<Pixel>>& image) 
+// Process 7
+// Convert image to high contrast (black and white only)
+vector<vector<Pixel>> process_7(const vector<vector<Pixel>> &image)
 {
     int num_rows = image.size();
     int num_columns = image[0].size();
     int gray_value;
-    vector<vector<Pixel>> new_image(num_rows, vector<Pixel> (num_columns));
-     for (int row = 0; row < num_rows; row++)
+    vector<vector<Pixel>> new_image(num_rows, vector<Pixel>(num_columns));
+    for (int row = 0; row < num_rows; row++)
     {
         for (int column = 0; column < num_columns; column++)
         {
@@ -489,14 +496,13 @@ vector<vector<Pixel>> process_7(const vector<vector<Pixel>>& image)
             int green = image[row][column].green;
             int blue = image[row][column].blue;
 
-            gray_value = (red + green + blue)/3;
+            gray_value = (red + green + blue) / 3;
 
             if (gray_value >= (255 / 2))
             {
                 new_image[row][column].red = 255;
                 new_image[row][column].green = 255;
                 new_image[row][column].blue = 255;
-
             }
             else
             {
@@ -507,17 +513,16 @@ vector<vector<Pixel>> process_7(const vector<vector<Pixel>>& image)
         }
     }
     return new_image;
-
 }
-//Process 8
-//Lightens image by a scaling factor
-vector<vector<Pixel>> process_8(const vector<vector<Pixel>>& image, double scaling_factor) 
+// Process 8
+// Lightens image by a scaling factor
+vector<vector<Pixel>> process_8(const vector<vector<Pixel>> &image, double scaling_factor)
 {
-    
+
     int num_rows = image.size();
     int num_columns = image[0].size();
-    vector<vector<Pixel>> new_image(num_rows, vector<Pixel> (num_columns));
-     for (int row = 0; row < num_rows; row++)
+    vector<vector<Pixel>> new_image(num_rows, vector<Pixel>(num_columns));
+    for (int row = 0; row < num_rows; row++)
     {
         for (int column = 0; column < num_columns; column++)
         {
@@ -531,17 +536,16 @@ vector<vector<Pixel>> process_8(const vector<vector<Pixel>>& image, double scali
         }
     }
     return new_image;
-
 }
 
-//Process 9
-//Darkens image by a scaling factor
-vector<vector<Pixel>> process_9(const vector<vector<Pixel>>& image, double scaling_factor)  
+// Process 9
+// Darkens image by a scaling factor
+vector<vector<Pixel>> process_9(const vector<vector<Pixel>> &image, double scaling_factor)
 {
     int num_rows = image.size();
     int num_columns = image[0].size();
-    vector<vector<Pixel>> new_image(num_rows, vector<Pixel> (num_columns));
-     for (int row = 0; row < num_rows; row++)
+    vector<vector<Pixel>> new_image(num_rows, vector<Pixel>(num_columns));
+    for (int row = 0; row < num_rows; row++)
     {
         for (int column = 0; column < num_columns; column++)
         {
@@ -557,15 +561,15 @@ vector<vector<Pixel>> process_9(const vector<vector<Pixel>>& image, double scali
     return new_image;
 }
 
-//Process 10
-//Converts image to only black, white, red, blue, and green
-vector<vector<Pixel>> process_10(const vector<vector<Pixel>>& image)
+// Process 10
+// Converts image to only black, white, red, blue, and green
+vector<vector<Pixel>> process_10(const vector<vector<Pixel>> &image)
 {
     int num_rows = image.size();
     int num_columns = image[0].size();
     int max_rgb;
-    vector<vector<Pixel>> new_image(num_rows, vector<Pixel> (num_columns));
-     for (int row = 0; row < num_rows; row++)
+    vector<vector<Pixel>> new_image(num_rows, vector<Pixel>(num_columns));
+    for (int row = 0; row < num_rows; row++)
     {
         for (int column = 0; column < num_columns; column++)
         {
@@ -625,128 +629,133 @@ int main()
             {
                 input_filename = get_input_filename();
             }
-            cout << "Filename: "; cout << input_filename; cout << "\n";
+            cout << "Filename: ";
+            cout << input_filename;
+            cout << "\n";
             selected_filter = get_selection();
             if (selected_filter == -1)
             {
                 return 0;
             }
-        }
-        while (selected_filter < 1 || selected_filter > 10 );
-    
+        } while (selected_filter < 1 || selected_filter > 10);
+
         vector<vector<Pixel>> image_vector = read_image(input_filename);
         vector<vector<Pixel>> new_image_vector;
-        switch(selected_filter)
-        { 
-            case 1:
-                new_image_vector = process_1(image_vector);
-                break;
-            
-            case 2:
-                double scaling_factor;
-                do
-                {
-                    cout << "Please enter a scaling factor between 0 and 1."; cout << endl;
-                    cin >> scaling_factor;
-                    if (cin.fail())
-                    {
-                        cout << "Numeric value not entered. Program quitting.";
-                        return 1;
-                    }
-                } 
-                while (scaling_factor < 0 || scaling_factor > 1);
+        switch (selected_filter)
+        {
+        case 1:
+            new_image_vector = process_1(image_vector);
+            break;
 
-                new_image_vector = process_2(image_vector, scaling_factor);
-                break;
-            case 3:
-                new_image_vector = process_3(image_vector);
-                break;
-            case 4:
-                new_image_vector = process_4(image_vector);
-                break;
-            case 5:
-                int num_degrees;
-                do
-                {
-                    cout << "Please enter number of degrees you wish to rotate (in multiples of 90 only)."; cout << endl;
-                    cin >> num_degrees;
-                    if (cin.fail())
-                    {
-                        cout << "Numeric value not entered. Program quitting.";
-                        return 1;
-                    }
-                } 
-                while (num_degrees % 90 != 0);
-
-                new_image_vector = process_5(image_vector, num_degrees);
-                break;
-            case 6:
-                int x_factor;
-                int y_factor;
-                
-                cout << "Please enter factor by which to increase the width (integer values only)."; cout << endl;
-                cin >> x_factor;
-                    if (cin.fail())
-                {
-                    cout << "Non-integer values not allowed. Program quitting.";
-                    return 1;
-                }
-                cout << "Please enter a factor by which to increase the height (integer values only)."; cout << endl;
-                cin >> y_factor;
+        case 2:
+            double scaling_factor;
+            do
+            {
+                cout << "Please enter a scaling factor between 0 and 1.";
+                cout << endl;
+                cin >> scaling_factor;
                 if (cin.fail())
                 {
-                    cout << "Non-integer values not allowed. Program quitting.";
+                    cout << "Numeric value not entered. Program quitting.";
                     return 1;
                 }
-                new_image_vector = process_6(image_vector, x_factor, y_factor);
-                break;
-                
-            case 7:
-                new_image_vector = process_7(image_vector);
-                break;
-            case 8:
-                double scaling_factor_light;
-                do
-                {
-                    cout << "Please enter a factor by which to lighten the image (between 0 and 1)."; cout << endl;
-                    cin >> scaling_factor_light;
-                    if (cin.fail())
-                    {
-                        cout << "Numeric value not entered. Program quitting.";
-                        return 1;
-                    }
-                }
-                while (scaling_factor_light < 0 || scaling_factor_light > 1);
+            } while (scaling_factor < 0 || scaling_factor > 1);
 
-                new_image_vector = process_8(image_vector, scaling_factor_light);
-                break;
-            case 9:
-                double scaling_factor_dark;
-                do
+            new_image_vector = process_2(image_vector, scaling_factor);
+            break;
+        case 3:
+            new_image_vector = process_3(image_vector);
+            break;
+        case 4:
+            new_image_vector = process_4(image_vector);
+            break;
+        case 5:
+            int num_degrees;
+            do
+            {
+                cout << "Please enter number of degrees you wish to rotate (in multiples of 90 only).";
+                cout << endl;
+                cin >> num_degrees;
+                if (cin.fail())
                 {
-                    cout << "Please enter a factor by which to darken the image (between 0 and 1)."; cout << endl;
-                    cin >> scaling_factor_dark;
-                    if (cin.fail())
-                    {
-                        cout << "Numeric value not entered. Program quitting.";
-                        return 1;
-                    }
+                    cout << "Numeric value not entered. Program quitting.";
+                    return 1;
                 }
-                while (scaling_factor_dark < 0 || scaling_factor_dark > 1);
+            } while (num_degrees % 90 != 0);
 
-                new_image_vector = process_9(image_vector, scaling_factor_dark);
-                break;
-            case 10:
-                new_image_vector = process_10(image_vector);
-                break;
-        
+            new_image_vector = process_5(image_vector, num_degrees);
+            break;
+        case 6:
+            int x_factor;
+            int y_factor;
+
+            cout << "Please enter factor by which to increase the width (integer values only).";
+            cout << endl;
+            cin >> x_factor;
+            if (cin.fail())
+            {
+                cout << "Non-integer values not allowed. Program quitting.";
+                return 1;
+            }
+            cout << "Please enter a factor by which to increase the height (integer values only).";
+            cout << endl;
+            cin >> y_factor;
+            if (cin.fail())
+            {
+                cout << "Non-integer values not allowed. Program quitting.";
+                return 1;
+            }
+            new_image_vector = process_6(image_vector, x_factor, y_factor);
+            break;
+
+        case 7:
+            new_image_vector = process_7(image_vector);
+            break;
+        case 8:
+            double scaling_factor_light;
+            do
+            {
+                cout << "Please enter a factor by which to lighten the image (between 0 and 1).";
+                cout << endl;
+                cin >> scaling_factor_light;
+                if (cin.fail())
+                {
+                    cout << "Numeric value not entered. Program quitting.";
+                    return 1;
+                }
+            } while (scaling_factor_light < 0 || scaling_factor_light > 1);
+
+            new_image_vector = process_8(image_vector, scaling_factor_light);
+            break;
+        case 9:
+            double scaling_factor_dark;
+            do
+            {
+                cout << "Please enter a factor by which to darken the image (between 0 and 1).";
+                cout << endl;
+                cin >> scaling_factor_dark;
+                if (cin.fail())
+                {
+                    cout << "Numeric value not entered. Program quitting.";
+                    return 1;
+                }
+            } while (scaling_factor_dark < 0 || scaling_factor_dark > 1);
+
+            new_image_vector = process_9(image_vector, scaling_factor_dark);
+            break;
+        case 10:
+            new_image_vector = process_10(image_vector);
+            break;
         }
 
         output_filename = get_output_filename();
         bool success = write_image(output_filename, new_image_vector);
         if (success)
         {
-            cout << "Please find your altered image named: "; cout << output_filename; cout << " in your current directory"; cout << endl;
+            cout << "Please find your altered image named: ";
+            cout << output_filename;
+            cout << " in your current directory";
+            cout << endl;
         }
         else
         {
